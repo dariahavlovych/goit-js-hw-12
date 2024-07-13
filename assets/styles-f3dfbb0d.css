@@ -1,1 +1,0 @@
-img,abbr{display:block}ul.gallery{width:1128px;margin:0 auto;list-style-type:none;padding-left:0;display:flex;flex-wrap:wrap;gap:24px}li.gallery-item{width:calc((100% - 48px) / 3)}img{width:100%;object-fit:cover}img:hover{width:101%;height:101%}.js-lightbox{background-color:#2e2f42}
