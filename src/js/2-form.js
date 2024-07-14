@@ -27,6 +27,7 @@ function submitHandler(event) {
 
     if (!formData.email || !formData.message) {
         alert("Fill please all fields");
+        return;
     }
     
     console.dir(formData);
