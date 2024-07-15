@@ -24,12 +24,13 @@ function inputsHandler(event) {
 
 function submitHandler(event) {
     event.preventDefault();
+    const userEmail = event.currentTarget.elements.email.value.trim();
+    const userMessage = event.currentTarget.elements.message.value.trim();
 
-    if (!formData.email || !formData.message) {
-        alert("Fill please all fields");
-        return;
+    if (!userEmail || !userMessage) {
+        return alert("Fill please all fields");
     }
-    
+
     console.dir(formData);
     localStorage.removeItem(LS_KEY);
     event.currentTarget.reset();
