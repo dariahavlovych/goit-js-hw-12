@@ -28,14 +28,22 @@ export function createGalleryMarkup(dataObj) {
 			src="${webformatURL}"
 			alt="${tags}"
 			/>
+    <div class="image-stats">
+  <p>Likes </br> ${likes}</p>
+  <p> Views </br> ${views}</p>
+  <p>Comments </br> ${comments}</p>
+  <p>Dowloads </br> ${downloads}</p>
+</div>
 	</a>
 </li>`
     )
     .join('');
+
   const galleryModal = new SimpleLightbox('.gallery-item a', {
     className: 'js-lightbox',
     overlayOpacity: 0.8,
     captionsData: 'alt',
     captionDelay: 250,
   });
+  galleryModal.refresh();
 }
