@@ -1,17 +1,15 @@
-// webformatURL — посилання на маленьке зображення для списку карток у галереї
-// largeImageURL — посилання на велике зображення для модального вікна
-// tags — рядок з описом зображення. Підійде для атрибута alt
-// likes — кількість вподобайок
-// views — кількість переглядів
-// comments — кількість коментарів
-// downloads — кількість завантажень
-
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 const gallery = document.querySelector('ul.gallery');
+const galleryModal = new SimpleLightbox('.gallery-item a', {
+  className: 'js-lightbox',
+  overlayOpacity: 0.8,
+  captionsData: 'alt',
+  captionDelay: 250,
+});
 
 export function createGalleryMarkup(dataObj) {
-  gallery.innerHTML = dataObj
+  const markup = dataObj
     .map(
       ({
         webformatURL,
@@ -38,12 +36,6 @@ export function createGalleryMarkup(dataObj) {
 </li>`
     )
     .join('');
-
-  const galleryModal = new SimpleLightbox('.gallery-item a', {
-    className: 'js-lightbox',
-    overlayOpacity: 0.8,
-    captionsData: 'alt',
-    captionDelay: 250,
-  });
+  gallery.innerHTML = markup;
   galleryModal.refresh();
 }

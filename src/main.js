@@ -6,12 +6,13 @@ import { getImagesByUserSearch } from './js/pixabay-api';
 
 const searchForm = document.querySelector('.search-form');
 searchForm.addEventListener('submit', submitSearchHandler);
-
+const gallery = document.querySelector('ul.gallery');
 const loader = document.querySelector('.loader');
 let searchResult;
 
 function submitSearchHandler(event) {
   event.preventDefault();
+  gallery.innerHTML = '';
   loader.classList.remove('hidden');
   const searchText = event.target.elements.search.value.trim().toLowerCase();
   if (!searchText) {
