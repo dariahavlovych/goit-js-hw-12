@@ -20,7 +20,7 @@ function submitSearchHandler(event) {
   } else {
     getImagesByUserSearch(searchText)
       .then(response => {
-        if (response.data.hits.length === 0) {
+        if (response.hits.length === 0) {
           iziToast.error({
             message:
               'Sorry, there are no images matching your search query. Please try again!',
@@ -29,7 +29,7 @@ function submitSearchHandler(event) {
             icon: '',
           });
         }
-        createGalleryMarkup(response.data.hits);
+        createGalleryMarkup(response.hits);
       })
       .catch(error => console.log(error))
       .finally(() => {

@@ -10,5 +10,5 @@ export async function getImagesByUserSearch(searchText) {
       safesearch: true,
     },
   });
-  return response;
+  return response.data;
 }
