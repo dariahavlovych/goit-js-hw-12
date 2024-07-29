@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-export function getImagesByUserSearch(searchText) {
-  return axios.get('https://pixabay.com/api', {
+export async function getImagesByUserSearch(searchText) {
+  const response = await axios.get('https://pixabay.com/api', {
     params: {
       key: '45077643-3bb964d60cb084522e3de8d92',
       q: searchText,
@@ -10,4 +10,5 @@ export function getImagesByUserSearch(searchText) {
       safesearch: true,
     },
   });
+  return response;
 }
