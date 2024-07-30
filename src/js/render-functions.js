@@ -36,6 +36,6 @@ export function createGalleryMarkup(dataObj) {
 </li>`
     )
     .join('');
-  gallery.innerHTML = markup;
+  gallery.insertAdjacentHTML('beforeend', markup);
   galleryModal.refresh();
 }
