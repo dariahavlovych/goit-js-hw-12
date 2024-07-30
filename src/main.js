@@ -11,7 +11,7 @@ const loader = document.querySelector('.loader');
 const loadMoreBtn = document.querySelector('.load-button');
 loadMoreBtn.addEventListener('click', loadMoreHandler);
 let page;
-const perPage = 35;
+const perPage = 15;
 let searchText;
 
 async function submitSearchHandler(event) {
