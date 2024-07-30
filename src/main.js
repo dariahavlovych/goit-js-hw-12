@@ -11,7 +11,7 @@ const loader = document.querySelector('.loader');
 const loadMoreBtn = document.querySelector('.load-button');
 loadMoreBtn.addEventListener('click', loadMoreHandler);
 let page;
-const perPage = 15;
+const perPage = 35;
 let searchText;
 
 async function submitSearchHandler(event) {
@@ -42,10 +42,11 @@ async function submitSearchHandler(event) {
     }
     createGalleryMarkup(pictures.hits);
     page += 1;
+    loadMoreBtn.classList.remove('hidden');
 
-    if (page > 1) {
-      loadMoreBtn.classList.remove('hidden');
-    }
+    // if (page > 1) {
+    //   loadMoreBtn.classList.remove('hidden');
+    // }
   } catch (error) {
     console.log(error);
   } finally {
@@ -59,7 +60,21 @@ async function loadMoreHandler(event) {
     const pictures = await getImagesByUserSearch(searchText, page, perPage);
     createGalleryMarkup(pictures.hits);
     page += 1;
+    const totalPages = Math.ceil(pictures.totalHits / perPage);
+    if (page === totalPages) {
+      loadMoreBtn.classList.add('hidden');
+      iziToast.info({
+        message: 'We`re sorry, but you`ve reached the end of search results.',
+        position: 'topRight',
+        timeout: 2000,
+        icon: '',
+      });
+    }
   } catch (error) {
     console.log(error);
   }
 }
+
+//TODO:
+// 1. How to place loader under loadMoreBtn??
+// 2. Прокручування сторінки
