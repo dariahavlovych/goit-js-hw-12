@@ -13,6 +13,7 @@ loadMoreBtn.addEventListener('click', loadMoreHandler);
 let page;
 const perPage = 15;
 let searchText;
+let totalPages;
 
 async function submitSearchHandler(event) {
   event.preventDefault();
@@ -22,14 +23,15 @@ async function submitSearchHandler(event) {
   loadMoreBtn.classList.add('hidden');
   searchText = event.target.elements.search.value.trim().toLowerCase();
 
-  if (!searchText) {
+  if (searchText === '') {
     loader.classList.add('hidden');
-    event.target.reset();
+    event.currentTarget.reset();
     return;
   }
 
   try {
     const pictures = await getImagesByUserSearch(searchText, page, perPage);
+    totalPages = Math.ceil(pictures.totalHits / perPage);
     if (pictures.hits.length === 0) {
       iziToast.error({
         message:
@@ -41,6 +43,7 @@ async function submitSearchHandler(event) {
       return;
     }
     createGalleryMarkup(pictures.hits);
+
     page += 1;
     loadMoreBtn.classList.remove('hidden');
 
@@ -56,11 +59,31 @@ async function submitSearchHandler(event) {
 }
 
 async function loadMoreHandler(event) {
+  loadMoreBtn.classList.add('hidden');
+  loader.classList.remove('hidden');
+  page += 1;
+
   try {
     const pictures = await getImagesByUserSearch(searchText, page, perPage);
     createGalleryMarkup(pictures.hits);
-    page += 1;
-    const totalPages = Math.ceil(pictures.totalHits / perPage);
+  } catch (error) {
+    iziToast.error({
+      message: `Request failed with: ${error}`,
+      position: 'topRight',
+      timeout: 2000,
+      icon: '',
+    });
+  } finally {
+    loader.classList.add('hidden');
+    const galleryItemHeight = document
+      .querySelector('.gallery-item')
+      .getBoundingClientRect().height;
+
+    window.scrollBy({
+      top: galleryItemHeight * 2,
+      left: 0,
+      behavior: 'smooth',
+    });
     if (page === totalPages) {
       loadMoreBtn.classList.add('hidden');
       iziToast.info({
@@ -69,12 +92,12 @@ async function loadMoreHandler(event) {
         timeout: 2000,
         icon: '',
       });
+      loadMoreBtn.removeEventListener('click', loadMoreHandler);
+    } else {
+      loadMoreBtn.classList.remove('hidden');
     }
-  } catch (error) {
-    console.log(error);
   }
 }
 
 //TODO:
-// 1. How to place loader under loadMoreBtn??
-// 2. Прокручування сторінки
+// 1. REFACTOOOR
