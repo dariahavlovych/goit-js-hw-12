@@ -4,34 +4,43 @@ import 'izitoast/dist/css/iziToast.min.css';
 import { createGalleryMarkup } from './js/render-functions';
 import { getImagesByUserSearch } from './js/pixabay-api';
 
-const searchForm = document.querySelector('.search-form');
-searchForm.addEventListener('submit', submitSearchHandler);
-const gallery = document.querySelector('ul.gallery');
-const loader = document.querySelector('.loader');
-const loadMoreBtn = document.querySelector('.load-button');
-loadMoreBtn.addEventListener('click', loadMoreHandler);
-let page;
+const refs = {
+  searchForm: document.querySelector('.search-form'),
+  gallery: document.querySelector('ul.gallery'),
+  loader: document.querySelector('.loader'),
+  loadMoreBtn: document.querySelector('.load-button'),
+};
+
+refs.searchForm.addEventListener('submit', submitSearchHandler);
+
 const perPage = 15;
+let page;
 let searchText;
 let totalPages;
 
 async function submitSearchHandler(event) {
   event.preventDefault();
-  gallery.innerHTML = '';
+  refs.gallery.innerHTML = '';
   page = 1;
-  loader.classList.remove('hidden');
-  loadMoreBtn.classList.add('hidden');
+  refs.loader.classList.remove('hidden');
+  refs.loadMoreBtn.classList.add('hidden');
   searchText = event.target.elements.search.value.trim().toLowerCase();
 
-  if (searchText === '') {
-    loader.classList.add('hidden');
+  if (!searchText) {
+    refs.loader.classList.add('hidden');
+    iziToast.info({
+      message: 'Please enter search text!',
+      position: 'topRight',
+      timeout: 2000,
+    });
     event.currentTarget.reset();
     return;
   }
 
   try {
     const pictures = await getImagesByUserSearch(searchText, page, perPage);
-    totalPages = Math.ceil(pictures.totalHits / perPage);
+    createGalleryMarkup(pictures.hits);
+
     if (pictures.hits.length === 0) {
       iziToast.error({
         message:
@@ -42,39 +51,43 @@ async function submitSearchHandler(event) {
       });
       return;
     }
-    createGalleryMarkup(pictures.hits);
 
-    page += 1;
-    loadMoreBtn.classList.remove('hidden');
+    totalPages = Math.ceil(pictures.totalHits / perPage);
 
-    // if (page > 1) {
-    //   loadMoreBtn.classList.remove('hidden');
-    // }
-  } catch (error) {
-    console.log(error);
-  } finally {
-    event.target.reset();
-    loader.classList.add('hidden');
-  }
-}
-
-async function loadMoreHandler(event) {
-  loadMoreBtn.classList.add('hidden');
-  loader.classList.remove('hidden');
-  page += 1;
-
-  try {
-    const pictures = await getImagesByUserSearch(searchText, page, perPage);
-    createGalleryMarkup(pictures.hits);
+    if (totalPages > 1) {
+      refs.loadMoreBtn.classList.remove('hidden');
+      refs.loadMoreBtn.addEventListener('click', loadMoreHandler);
+    } else {
+      refs.loadMoreBtn.classList.add('hidden');
+    }
   } catch (error) {
     iziToast.error({
       message: `Request failed with: ${error}`,
       position: 'topRight',
       timeout: 2000,
-      icon: '',
     });
   } finally {
-    loader.classList.add('hidden');
+    event.target.reset();
+    refs.loader.classList.add('hidden');
+  }
+}
+
+async function loadMoreHandler(event) {
+  refs.loadMoreBtn.classList.add('hidden');
+  refs.loader.classList.remove('hidden');
+
+  try {
+    const pictures = await getImagesByUserSearch(searchText, page, perPage);
+    createGalleryMarkup(pictures.hits);
+    page += 1;
+  } catch (error) {
+    iziToast.error({
+      message: `Request failed with: ${error}`,
+      position: 'topRight',
+      timeout: 2000,
+    });
+  } finally {
+    refs.loader.classList.add('hidden');
     const galleryItemHeight = document
       .querySelector('.gallery-item')
       .getBoundingClientRect().height;
@@ -84,20 +97,18 @@ async function loadMoreHandler(event) {
       left: 0,
       behavior: 'smooth',
     });
+
     if (page === totalPages) {
-      loadMoreBtn.classList.add('hidden');
+      refs.loadMoreBtn.classList.add('hidden');
       iziToast.info({
         message: 'We`re sorry, but you`ve reached the end of search results.',
         position: 'topRight',
         timeout: 2000,
         icon: '',
       });
-      loadMoreBtn.removeEventListener('click', loadMoreHandler);
+      refs.loadMoreBtn.removeEventListener('click', loadMoreHandler);
     } else {
-      loadMoreBtn.classList.remove('hidden');
+      refs.loadMoreBtn.classList.remove('hidden');
     }
   }
 }
-
-//TODO:
-// 1. REFACTOOOR
