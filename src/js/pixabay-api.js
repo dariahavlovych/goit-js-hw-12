@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export async function getImagesByUserSearch(searchText, page, perPage) {
+export async function getImagesByUserSearch({ searchText, page, perPage }) {
   const response = (
     await axios.get('https://pixabay.com/api/', {
       params: {

@@ -12,21 +12,24 @@ const refs = {
 };
 
 refs.searchForm.addEventListener('submit', submitSearchHandler);
-
-const perPage = 15;
-let page;
-let searchText;
-let totalPages;
+const queryParams = {
+  perPage: 15,
+  page: 1,
+  searchText: '',
+  totalPages: 0,
+};
 
 async function submitSearchHandler(event) {
   event.preventDefault();
   refs.gallery.innerHTML = '';
-  page = 1;
+  queryParams.page = 1;
   refs.loader.classList.remove('hidden');
   refs.loadMoreBtn.classList.add('hidden');
-  searchText = event.target.elements.search.value.trim().toLowerCase();
+  queryParams.searchText = event.target.elements.search.value
+    .trim()
+    .toLowerCase();
 
-  if (!searchText) {
+  if (!queryParams.searchText) {
     refs.loader.classList.add('hidden');
     iziToast.info({
       message: 'Please enter search text!',
@@ -38,7 +41,7 @@ async function submitSearchHandler(event) {
   }
 
   try {
-    const pictures = await getImagesByUserSearch(searchText, page, perPage);
+    const pictures = await getImagesByUserSearch(queryParams);
     createGalleryMarkup(pictures.hits);
 
     if (pictures.hits.length === 0) {
@@ -52,9 +55,11 @@ async function submitSearchHandler(event) {
       return;
     }
 
-    totalPages = Math.ceil(pictures.totalHits / perPage);
+    queryParams.totalPages = Math.ceil(
+      pictures.totalHits / queryParams.perPage
+    );
 
-    if (totalPages > 1) {
+    if (queryParams.totalPages > 1) {
       refs.loadMoreBtn.classList.remove('hidden');
       refs.loadMoreBtn.addEventListener('click', loadMoreHandler);
     } else {
@@ -77,9 +82,9 @@ async function loadMoreHandler(event) {
   refs.loader.classList.remove('hidden');
 
   try {
-    const pictures = await getImagesByUserSearch(searchText, page, perPage);
+    const pictures = await getImagesByUserSearch(queryParams);
     createGalleryMarkup(pictures.hits);
-    page += 1;
+    queryParams.page += 1;
   } catch (error) {
     iziToast.error({
       message: `Request failed with: ${error}`,
@@ -98,7 +103,7 @@ async function loadMoreHandler(event) {
       behavior: 'smooth',
     });
 
-    if (page === totalPages) {
+    if (queryParams.page === queryParams.totalPages) {
       refs.loadMoreBtn.classList.add('hidden');
       iziToast.info({
         message: 'We`re sorry, but you`ve reached the end of search results.',
